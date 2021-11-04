@@ -16,15 +16,23 @@ public class PathfindingManager : MonoBehaviour
 	public void FindPath(int2 start, int2 end, GameObject UnitMove, int myKingdom, int ObjectiveType, Castle castle, bool OnFinish)
 	{
 		List<bool> WalkableList = new List<bool>();
+
+		NativeArray<int> BasicTileSave = new NativeArray<int>(map.RealWidth * map.RealHeight, Allocator.TempJob);
+		for (int x = 0; x < map.TileSave.Count; x++)
+		{
+			BasicTileSave[x] = map.TileSave[x];
+		}
+
 		for (int i = 0; i < allegiances.instance.Lists[myKingdom].State.Count; i++)
 		{
+
 			bool KingdomWalk = false;
-            if (allegiances.instance.Lists[myKingdom].State[i] == 1 || i == myKingdom || i == myKingdom == ObjectiveType)
-            {
+			if (allegiances.instance.Lists[myKingdom].State[i] == 1 || i == myKingdom || i == ObjectiveType)
+			{
 				KingdomWalk = true;
 			}
-            else
-            {
+			else
+			{
 				KingdomWalk = false;
 			}
 
@@ -33,11 +41,12 @@ public class PathfindingManager : MonoBehaviour
 				//UnFriendlyListNew.Add(i);
 				WalkableList.Add(true);
 			}
-            else
-            {
+			else
+			{
 				WalkableList.Add(false);
 			}
 		}
+
 		//BasicTileSave[ArrayNum] == 3 || BasicTileSave[ArrayNum] == 0
 		NativeArray<bool> NativeWalkable = new NativeArray<bool>(WalkableList.Count, Allocator.TempJob);
 		for (int x = 0; x < WalkableList.Count; x++)
@@ -47,11 +56,7 @@ public class PathfindingManager : MonoBehaviour
 
 		int Count = map.Width * map.Height + 2;
 
-		NativeArray<int> BasicTileSave = new NativeArray<int>(Count, Allocator.TempJob);
-		for (int x = 0; x < map.TileSave.Count; x++)
-		{
-			BasicTileSave[x] = map.TileSave[x];
-		}
+
 
 
 
@@ -79,7 +84,7 @@ public class PathfindingManager : MonoBehaviour
 		JobHandle jobHandle = findPathJob.Schedule();
 		jobHandle.Complete();
 
-		
+
 		for (int i = 0; i < findPathJob.Path.Length; i++)
 		{
 			if (findPathJob.Path[i].x != 0)
@@ -118,7 +123,7 @@ public class PathfindingManager : MonoBehaviour
 
 		public NativeArray<int2> OddOffset;
 		public NativeArray<int2> EvenOffset;
-		
+
 		//public NativeArray<int> BasicTileSave;
 
 		//public NativeArray<int> Kingdoms;
@@ -138,12 +143,12 @@ public class PathfindingManager : MonoBehaviour
 			int2 Grid = new int2(GridSize.x, GridSize.y);
 			//Debug.Log(UnwalkableKingdoms.Length);
 			NativeArray<PathNode> pathNodeArray = new NativeArray<PathNode>(Grid.x * Grid.y, Allocator.Temp);
-			
-            if (enemyType < UnwalkableKingdoms.Length)
-            {
+
+			if (enemyType < UnwalkableKingdoms.Length)
+			{
 				UnwalkableKingdomsSave[enemyType] = true;
 			}
-			
+
 			for (int x = 0; x < GridSize.x; x++)
 			{
 				for (int y = 0; y < GridSize.y; y++)
@@ -169,9 +174,9 @@ public class PathfindingManager : MonoBehaviour
 					pathNode.SetIsWalkable(WalkableTiles[ArrayNum]);
 
 					//Debug.Log(enemyType + "Invite5");
-                    ///cycle through each and consider if we pasted thier territory and if a path can be found using thier teritory ask, if not try then 2 terriories or decline
-                    ///
-                    
+					///cycle through each and consider if we pasted thier territory and if a path can be found using thier teritory ask, if not try then 2 terriories or decline
+					///
+
 					//in not kingdom
 
 					if (y % 2 == 1)
@@ -262,8 +267,8 @@ public class PathfindingManager : MonoBehaviour
 					int2 currentNodePosition = new int2(currentNode.xGrid, currentNode.yGrid);
 					//Debug.Log("Make1");
 					int tentativeGCost = currentNode.gCost + CalculateDistanceCost(currentNodePosition, neighbourPosition);
-					if(Count < 30)
-                    {
+					if (Count < 30)
+					{
 						Count += 1;
 						//Debug.Log("tentativeGCost: " + tentativeGCost + "  distanceCost  " + CalculateDistanceCost(currentNodePosition, neighbourPosition) + "  currentNode  " + currentNodePosition + "  neighbourPosition  " + neighbourPosition);
 					}
@@ -290,10 +295,10 @@ public class PathfindingManager : MonoBehaviour
 			PathNode endNode = pathNodeArray[endNodeIndex];
 			//Debug.Log("found1");
 			for (int i = 0; i < pathNodeArray.Length; i++)
-            {
+			{
 				//Debug.Log(pathNodeArray[i].xGrid + " " + pathNodeArray[i].yGrid);
-            }
-				
+			}
+
 			if (endNode.cameFromNodeIndex == -1)
 			{
 				// Didn't find a path!
@@ -304,7 +309,7 @@ public class PathfindingManager : MonoBehaviour
 			{
 				//Debug.Log("path");
 				//Debug.Log(pathNodeArray.Length);
-				
+
 				NativeArray<int2> path = CalculatePath(pathNodeArray, endNode);
 				for (int i = 0; i < path.Length; i++)
 				{
@@ -332,22 +337,22 @@ public class PathfindingManager : MonoBehaviour
 		{
 			//.36
 			int difference = math.abs(aPosition.y - bPosition.y);
-			
+
 			if (difference == 2)
-            {
+			{
 				int xDistance = math.abs(aPosition.x - bPosition.x);
 				int yDistance = math.abs(aPosition.y - bPosition.y);
 				int remaining = math.abs(xDistance - yDistance);
 				return 5;
 			}
-            else
-            {
+			else
+			{
 				int xDistance = math.abs(aPosition.x - bPosition.x);
 				int yDistance = math.abs(aPosition.y - bPosition.y);
 				int remaining = math.abs(xDistance - yDistance);
 				return 10;
 			}
-			
+
 		}
 
 		private NativeList<int2> CalculatePath(NativeArray<PathNode> pathNodeArray, PathNode endNode)
@@ -472,11 +477,11 @@ public class PathfindingManager : MonoBehaviour
 			endPosition = new int2(end.x, end.y),
 			GridSize = new int2(map.RealWidth, map.RealHeight),
 			Path = PathOut,
-			Kingdoms = NativeKingdom,
-			BasicTileSave = BasicTileSave,
+			//Kingdoms = NativeKingdom,
+			//BasicTileSave = BasicTileSave,
 			MyKingdom = myKingdom,
 			enemyType = ObjectiveType,
-			UnwalkableKingdoms = UnWalkableKingdoms,
+			//UnwalkableKingdoms = UnWalkableKingdoms,
 			OddOffset = Odd,
 			EvenOffset = Even,
 		};
@@ -512,7 +517,7 @@ public class PathfindingManager : MonoBehaviour
 	public int AlteredPathExists(int2 start, int2 end, int MyFaction)
 	{
 		List<int> UnFriendlyListNew = new List<int>();
-		
+
 		for (int i = 0; i < allegiances.instance.Lists[MyFaction].State.Count; i++)
 		{
 			if (allegiances.instance.Lists[MyFaction].State[i] == 1)
@@ -538,7 +543,7 @@ public class PathfindingManager : MonoBehaviour
 		List<int> UnFriendlyListNew = new List<int>();
 		int Count = map.Width * map.Height + 2;
 		if (UseKingdoms == true)
-        {
+		{
 			for (int i = 0; i < allegiances.instance.Lists[MyKingdom].State.Count; i++)
 			{
 				if (allegiances.instance.Lists[MyKingdom].State[i] == 1)
@@ -547,14 +552,14 @@ public class PathfindingManager : MonoBehaviour
 				}
 			}
 		}
-        else
-        {
+		else
+		{
 			for (int i = 0; i < allegiances.instance.Lists[MyKingdom].State.Count; i++)
 			{
 				UnFriendlyListNew.Add(i);
 			}
 		}
-		
+
 
 		NativeArray<int> BasicTileSave = new NativeArray<int>(Count, Allocator.TempJob);
 		for (int x = 0; x < map.TileSave.Count; x++)
