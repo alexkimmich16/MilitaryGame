@@ -15,7 +15,7 @@ public class PathfindingManager : MonoBehaviour
 	//GET OBJECTS KINGDOM AND MAKE IT SO OWN KINGDOM IS ALWAYS ALLOWED!!
 	public void FindPath(int2 start, int2 end, GameObject UnitMove, int myKingdom, int ObjectiveType, Castle castle, bool OnFinish)
 	{
-		List<bool> WalkableList = new List<bool>();
+		
 
 		NativeArray<int> BasicTileSave = new NativeArray<int>(map.RealWidth * map.RealHeight, Allocator.TempJob);
 		for (int x = 0; x < map.TileSave.Count; x++)
@@ -23,42 +23,46 @@ public class PathfindingManager : MonoBehaviour
 			BasicTileSave[x] = map.TileSave[x];
 		}
 
-		for (int i = 0; i < allegiances.instance.Lists[myKingdom].State.Count; i++)
+		List<bool> WalkableList = new List<bool>();
+		for (int x = 0; x < map.RealWidth; x++)
 		{
+			for (int y = 0; y < map.RealHeight; y++)
+			{
+				int TileKingdom = map.GetTileFaction(x,y);
+				int ArrayNum = (x * map.RealHeight) + y;
 
-			bool KingdomWalk = false;
-			if (allegiances.instance.Lists[myKingdom].State[i] == 1 || i == myKingdom || i == ObjectiveType)
-			{
-				KingdomWalk = true;
-			}
-			else
-			{
-				KingdomWalk = false;
-			}
+				bool KingdomWalk = false;
+				if (allegiances.instance.Lists[myKingdom].State[TileKingdom] == 1 || TileKingdom == myKingdom || TileKingdom == ObjectiveType)
+				{
+					KingdomWalk = true;
+					//Debug.Log("  true");
+				}
+				else
+				{
+					KingdomWalk = false;
+					//Debug.Log("  false");
+				}
 
-			if (KingdomWalk == true && BasicTileSave[i] != 3 && BasicTileSave[i] != 0)
-			{
-				//UnFriendlyListNew.Add(i);
-				WalkableList.Add(true);
-			}
-			else
-			{
-				WalkableList.Add(false);
+				if (KingdomWalk == true && BasicTileSave[ArrayNum] != 3 && BasicTileSave[ArrayNum] != 0)
+				{
+					//UnFriendlyListNew.Add(i);
+					WalkableList.Add(true);
+					//Debug.Log(x + " " + y + "  true");
+				}
+				else
+				{
+					WalkableList.Add(false);
+					//Debug.Log(x + " " + y + "  false");
+				}
 			}
 		}
-
-		//BasicTileSave[ArrayNum] == 3 || BasicTileSave[ArrayNum] == 0
+		
 		NativeArray<bool> NativeWalkable = new NativeArray<bool>(WalkableList.Count, Allocator.TempJob);
 		for (int x = 0; x < WalkableList.Count; x++)
 		{
 			NativeWalkable[x] = WalkableList[x];
+			//Debug.Log(WalkableList[x]);
 		}
-
-		int Count = map.Width * map.Height + 2;
-
-
-
-
 
 		NativeArray<int2> Even = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
 		NativeArray<int2> Odd = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
@@ -66,11 +70,9 @@ public class PathfindingManager : MonoBehaviour
 		{
 			Even[x] = map.neighbourOffsetArrayEven[x];
 			Odd[x] = map.neighbourOffsetArrayOdd[x];
-			//Debug.Log(map.KingdomSave[x]);
 		}
 
 		NativeArray<int2> PathOut = new NativeArray<int2>(2500, Allocator.TempJob);
-
 		FindPathJob findPathJob = new FindPathJob
 		{
 			startPosition = new int2(start.x, start.y),
@@ -83,7 +85,6 @@ public class PathfindingManager : MonoBehaviour
 		};
 		JobHandle jobHandle = findPathJob.Schedule();
 		jobHandle.Complete();
-
 
 		for (int i = 0; i < findPathJob.Path.Length; i++)
 		{
@@ -141,14 +142,7 @@ public class PathfindingManager : MonoBehaviour
 		public void Execute()
 		{
 			int2 Grid = new int2(GridSize.x, GridSize.y);
-			//Debug.Log(UnwalkableKingdoms.Length);
 			NativeArray<PathNode> pathNodeArray = new NativeArray<PathNode>(Grid.x * Grid.y, Allocator.Temp);
-
-			if (enemyType < UnwalkableKingdoms.Length)
-			{
-				UnwalkableKingdomsSave[enemyType] = true;
-			}
-
 			for (int x = 0; x < GridSize.x; x++)
 			{
 				for (int y = 0; y < GridSize.y; y++)
@@ -168,17 +162,11 @@ public class PathfindingManager : MonoBehaviour
 					//set initially
 
 					//k is tile check's kingdom
+
 					int ArrayNum = (x * GridSize.y) + y;
-					int K = Kingdoms[ArrayNum];
 
 					pathNode.SetIsWalkable(WalkableTiles[ArrayNum]);
-
-					//Debug.Log(enemyType + "Invite5");
-					///cycle through each and consider if we pasted thier territory and if a path can be found using thier teritory ask, if not try then 2 terriories or decline
-					///
-
-					//in not kingdom
-
+					//Debug.Log(WalkableTiles[ArrayNum]);
 					if (y % 2 == 1)
 					{
 						pathNode.IsEven = true;
@@ -302,7 +290,7 @@ public class PathfindingManager : MonoBehaviour
 			if (endNode.cameFromNodeIndex == -1)
 			{
 				// Didn't find a path!
-				Debug.Log("Didn't find a path!");
+				//Debug.Log("Didn't find a path!");
 				FoundPath = false;
 			}
 			else
