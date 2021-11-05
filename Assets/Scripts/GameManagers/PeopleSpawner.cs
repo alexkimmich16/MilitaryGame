@@ -57,6 +57,15 @@ public class PeopleSpawner : MonoBehaviour
         allegiances.instance.Lists[Faction].ArmyTransforms.Add(Spawned.transform);
 
         castle.Armies.Add(Spawned.GetComponent<Unit>());
+
+        if (Faction == 0)
+        {
+            Spawned.GetComponent<ArmyPack>().Friendly = true;
+        }
+        else
+        {
+            Spawned.GetComponent<ArmyPack>().Friendly = false;
+        }
         
         if (Send == true)
         {

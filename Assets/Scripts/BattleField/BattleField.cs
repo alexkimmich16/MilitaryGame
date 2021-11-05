@@ -46,26 +46,7 @@ public class BattleField : MonoBehaviour
 
     //it could generate it right off the bat, and just access and change
     // Start is called before the first frame update
-    public bool WalkAble(int x, int y)
-    {
-        if (tilesTypes[x,y] == 1 || tilesTypes[x, y] == 2)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    public int CheckTile(int x, int y)
-    {
-        return (tilesTypes[x, y]);
-    }
-    public Vector2 GetPosition(int x, int y)
-    {
-        Vector3 Maxplace = FieldMap.CellToWorld(new Vector3Int(x, y, 0));
-        return Maxplace;
-    }
+    
 
     public void SpawnPeople(List<int> FriendCounts, List<int> EnemyCounts)
     {
@@ -92,28 +73,30 @@ public class BattleField : MonoBehaviour
                 Spawn(FriendCounts[i], i, PlayerSpawns[PlayerStacks + 1], true);
             }
         }
-
-        
     }
 
     public void Spawn(int Number, int Type, int2 Pos, bool Friendly)
     {
         Vector2 position = GetPosition(Pos.x, Pos.y);
-        
-        GameObject Spawned = (GameObject)Instantiate(BattleUnits[Number], position, Quaternion.identity);
+        //Debug.Log("pt1");
+        GameObject Spawned = (GameObject)Instantiate(BattleUnits[Type], position, Quaternion.identity);
+        //Debug.Log("pt2");
         Spawned.GetComponent<BattleUnit>().World = position;
+        //Debug.Log("pt3");
         Spawned.GetComponent<BattleUnit>().Grid = Pos;
+        //Debug.Log("pt4");
         Spawned.GetComponent<BattleUnit>().Friendly = Friendly;
+        //Debug.Log("pt5");
         //Spawned.GetComponent<BattleUnit>().FactionNum = Faction;
-        if (Number == 0)
+        if (Type == 0)
         {
             
         }
-        else if (Number == 1)
+        else if (Type == 1)
         {
             //Archer
         }
-        else if (Number == 2)
+        else if (Type == 2)
         {
             //Calvalry
         }
@@ -126,7 +109,6 @@ public class BattleField : MonoBehaviour
     //damage is based on the amount of people inside
     //player can decide a lower number and its automatically named "delta quad" or "alpha quad" for stratagy
 
-
     void Start()
     {
         map = HexGenerator.instance;
@@ -134,7 +116,7 @@ public class BattleField : MonoBehaviour
         tilesTypes = new int[MapSize.x, MapSize.y];
     }
 
-    public void UnfunctionalTileSpawn()
+    public void UnfunctionalTileSpawn(List<int> FriendCounts, List<int> EnemyCounts)
     {
         for (int i = 0; i < MapSize.x; i++)
         {
@@ -145,11 +127,11 @@ public class BattleField : MonoBehaviour
                 FieldMap.SetTile(new Vector3Int(i, j, 0), map.tileTypes[Type].tile);
             }
         }
+        SpawnPeople(FriendCounts, EnemyCounts);
     }
 
     public void RecieveTileInfo(List<int2> Spots)
     {
-        //Debug.Log("generate1");
         //set list size
         AroundTiles.Clear();
         BaseTiles.Clear();
@@ -314,8 +296,6 @@ public class BattleField : MonoBehaviour
                     int Type = Spots[i].TileType;
                     FieldMap.SetTile(new Vector3Int(Around[j].x, Around[j].y, 0), map.tileTypes[Type].tile);
                 }
-                
-                
             }
         }
     }
@@ -342,5 +322,26 @@ public class BattleField : MonoBehaviour
         }
         //Debug.Log("Surround3");
         return Tiles;
+    }
+
+    public bool WalkAble(int x, int y)
+    {
+        if (tilesTypes[x, y] == 1 || tilesTypes[x, y] == 2)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public int CheckTile(int x, int y)
+    {
+        return (tilesTypes[x, y]);
+    }
+    public Vector2 GetPosition(int x, int y)
+    {
+        Vector3 Maxplace = FieldMap.CellToWorld(new Vector3Int(x, y, 0));
+        return Maxplace;
     }
 }

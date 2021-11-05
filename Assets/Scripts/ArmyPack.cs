@@ -14,6 +14,7 @@ public class ArmyPack : MonoBehaviour
     public GameObject Boarder;
 
     public bool Fighting = false;
+    public bool Friendly = false;
 
    // __ was convinced that someone was going to murder her, so she
    //defected

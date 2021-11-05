@@ -8133,7 +8133,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &838958999
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9843,7 +9843,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1039535313}
   - component: {fileID: 1039535312}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Global
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10425,7 +10425,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1078869721
 Transform:
   m_ObjectHideFlags: 0
@@ -10516,7 +10516,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0, g: 0.06005001, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -10537,7 +10537,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 32
+    m_Bits: 4128
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -20842,9 +20842,9 @@ MonoBehaviour:
     x: 10
     y: 10
   BattleUnits:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 9216104643235338267, guid: aa7e61e05fd9d6047b9227070dfddff9, type: 3}
+  - {fileID: 4175174928965149852, guid: da360b16e9927d441932784d69fcada1, type: 3}
+  - {fileID: 4252557556405694067, guid: 9e24b0aff607e99499757f356abab39b, type: 3}
   EachMaxGroup: 050000000500000005000000
   PlayerSpawns:
   - x: 1

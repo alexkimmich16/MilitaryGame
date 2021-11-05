@@ -34,7 +34,13 @@ public class BattleUnit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        /*
+        int2 Difference = new int2(Grid)
+        if ()
+        {
+
+        }
+        */
     }
 
     public void SetDirection(int Num)

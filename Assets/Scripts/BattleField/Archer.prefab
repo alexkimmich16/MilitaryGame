@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4175174928965149825}
   - component: {fileID: 4175174928965149854}
   - component: {fileID: 4175174928965149855}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Archer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inside: 0
   Speed: 0
-  MaxInside: 0
   Current: 0
   Grid:
     x: 0

@@ -80,19 +80,43 @@ public class PeopleManager : MonoBehaviour
                         int2 Ajusted = new int2(UnitI.GridX + Offset[n].x, UnitI.GridY + Offset[n].y);
                         if (Ajusted.x == UnitJ.GridX && Ajusted.y == UnitJ.GridY)
                         {
-                            
                             ArmyPack ArmyI = Armies[i].gameObject.GetComponent<ArmyPack>();
                             ArmyPack ArmyJ = Armies[j].gameObject.GetComponent<ArmyPack>();
                             if (ArmyI.Fighting == false && ArmyJ.Fighting == false)
                             {
                                 //Debug.Log("Battle");
+                                ArmyI.Fighting = true;
+                                ArmyJ.Fighting = true;
                                 List<int2> BattleFieldTiles = new List<int2>();
                                 BattleFieldTiles.Add(new int2(UnitI.GridX, UnitI.GridY));
                                 BattleFieldTiles.Add(new int2(UnitJ.GridX, UnitJ.GridY));
                                 UIManager.instance.BattleFieldOpen(true);
                                 if(SimpleMapGen == true)
                                 {
-                                    BattleField.instance.UnfunctionalTileSpawn();
+
+                                    ArmyPack MyArmy = Armies[i].gameObject.GetComponent<ArmyPack>();
+                                    ArmyPack TheyArmy = Armies[j].gameObject.GetComponent<ArmyPack>();
+                                    if (ArmyI.Friendly == true)
+                                    {
+                                        MyArmy = ArmyI;
+                                        TheyArmy = ArmyJ;
+                                    }
+                                    else
+                                    {
+                                        MyArmy = ArmyJ;
+                                        TheyArmy = ArmyI;
+                                    }
+                                    List<int> Friendly = new List<int>(3);
+                                    List<int> Enemy = new List<int>(3);
+                                    Friendly.Add(MyArmy.Knights);
+                                    Friendly.Add(MyArmy.Archers);
+                                    Friendly.Add(MyArmy.Calvalry);
+
+                                    Enemy.Add(TheyArmy.Knights);
+                                    Enemy.Add(TheyArmy.Archers);
+                                    Enemy.Add(TheyArmy.Calvalry);
+
+                                    BattleField.instance.UnfunctionalTileSpawn(Friendly, Enemy);
                                 }
                                 else
                                 {
@@ -100,8 +124,7 @@ public class PeopleManager : MonoBehaviour
                                 }
 
 
-                                ArmyI.Fighting = true;
-                                ArmyJ.Fighting = true;
+                                
                             }
 
                         }
