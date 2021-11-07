@@ -123,10 +123,11 @@ public class HexGenerator : MonoBehaviour
 
 	public void GenerateMap()
     {
+		//how x is hight, width is y
 		//RealWidth = Width / 2;
-		RealWidth = Width;
+		RealWidth = Height;
 		//RealHeight = Height * 2;
-		RealHeight = Height;
+		RealHeight = Width; 
 		tiles = new int[RealWidth, RealHeight];
 
 		Vector3 Maxplace = mountainMap.CellToWorld(new Vector3Int(RealWidth, RealHeight, 0));

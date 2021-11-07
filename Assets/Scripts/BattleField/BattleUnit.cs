@@ -23,7 +23,12 @@ public class BattleUnit : MonoBehaviour
     public Vector2 World;
     public bool Friendly;
     private Transform pathParent;
+    public bool Active;
 
+    public void SetActive(bool active)
+    {
+        Active = active;
+    }
     
 
     void Start()

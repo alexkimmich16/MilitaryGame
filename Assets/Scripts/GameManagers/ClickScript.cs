@@ -32,15 +32,7 @@ public class ClickScript : MonoBehaviour
     public Castle castle;
 
     //public Castle selectedCastle;
-    public static bool IsPointerOverUIObject()
-    {
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-        return results.Count > 0;
-    }
-
+    #region Non-Battle
     public void ClickTouchLeft()
     {
         //get mouse
@@ -49,8 +41,8 @@ public class ClickScript : MonoBehaviour
         Ajusted.y -= map.YDrawOffset;
         //ints from mouse
         Vector3Int gridInts = map.mountainMap.WorldToCell(Ajusted);
-        //Debug.Log("CLICK:  " + gridInts.x + " " + gridInts.y);
-        if (gridInts.x > map.RealWidth || gridInts.x < 0 || gridInts.y > map.RealHeight || gridInts.y < 0)
+        //Debug.Log("CLICK:  " + InBounds(gridInts.x, gridInts.y));
+        if (InBounds(gridInts.x, gridInts.y) == false)
         {
             return;
         }
@@ -108,7 +100,6 @@ public class ClickScript : MonoBehaviour
             }
         }
     }
-
     public void ClickTouchRight()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -161,7 +152,7 @@ public class ClickScript : MonoBehaviour
         }
         if (castle != null)
         {
-            if (CheckBounds(gridInts.x, gridInts.y) == true)
+            if (InBounds(gridInts.x, gridInts.y) == true)
             {
                 UIManager.instance.SendMenuRecieve(new int2(gridInts.x, gridInts.y));
                 UIManager.instance.SendMenuOpen(true);
@@ -169,37 +160,106 @@ public class ClickScript : MonoBehaviour
             
         }
     }
-
-    
-    private bool CheckBounds(int x, int y)
+    public void RightHold()
     {
-        if (x > map.RealWidth || x < 0 || y > map.RealHeight || y < 0)
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit3 = Physics2D.Raycast(mousePos, Vector2.zero);
+        if (hit3 != null)
         {
-            return false;
-        }
-        else
-        {
-            return true;
+            if (UIManager.instance.ChangeTerrain == true)
+            {
+                if (hit3.transform.tag == "Ground")
+                {
+                    //GameObject.activeSelf;
+                    int instaniateNum;
+                    if (UIManager.instance.FarmChosen == true)
+                    {
+                        instaniateNum = 0;
+                    }
+                    else
+                    {
+                        instaniateNum = 1;
+                    }
+
+                    hit3.collider.transform.GetComponent<ClickableTile>().Destroy(instaniateNum);
+                }
+            }
+
         }
     }
+    #endregion
+
+    #region Battle
+    public void ClickTouchLeftBattle()
+    {
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 Ajusted = mousePos;
+        Ajusted.y -= map.YDrawOffset;
+        //ints from mouse
+        Vector3Int gridInts = BattleField.instance.FieldMap.WorldToCell(Ajusted);
+
+        CurrentSelected = null;
+        if (InBoundsBattle(gridInts.x, gridInts.y) == true)
+        {
+            return;
+        }
+
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+        if (hit != null && hit.transform.GetComponent<BattleUnit>())
+        {
+            hit.transform.GetComponent<BattleUnit>().SetActive(true);
+            CurrentSelected = hit.transform.gameObject;
+            UIManager.instance.SetStatManager(true);
+        }
+        
+    }
+    public void ClickTouchRightBattle()
+    {
+
+    }
+    public void RightHoldBattle()
+    {
+
+    }
+    #endregion
+
     void Update()
     {
         if(map.selectedUnit != null)
         {
             map.selectedUnit = CurrentSelected;
         }
-        if (Input.GetMouseButtonDown(1))
+        if (BattleField.instance.Active == false)
         {
-            ClickTouchRight();
+            if (Input.GetMouseButtonDown(1))
+            {
+                ClickTouchRight();
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                ClickTouchLeft();
+            }
+            if (Input.GetMouseButton(1))
+            {
+                RightHold();
+            }
         }
-        if (Input.GetMouseButtonDown(0))
+        else
         {
-            ClickTouchLeft();
+            if (Input.GetMouseButtonDown(1))
+            {
+                ClickTouchRightBattle();
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                ClickTouchLeftBattle();
+            }
+            if (Input.GetMouseButton(1))
+            {
+                RightHoldBattle();
+            }
         }
-        if (Input.GetMouseButton(1))
-        {
-            RightHold();
-        }
+        
         //left Touch
         /*
                 if (hit.transform.tag == "Worker" && UIManager.instance.ChangeTerrain == false)
@@ -256,31 +316,39 @@ public class ClickScript : MonoBehaviour
                 */
     }
 
-    public void RightHold()
+    
+
+    public static bool IsPointerOverUIObject()
     {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hit3 = Physics2D.Raycast(mousePos, Vector2.zero);
-        if (hit3 != null)
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
+    }
+
+    private bool InBoundsBattle(int x, int y)
+    {
+        BattleField BF = BattleField.instance;
+        if (x > BF.MapSize.y || x < 0 || y > BF.MapSize.x || y < 0)
         {
-            if (UIManager.instance.ChangeTerrain == true)
-            {
-                if (hit3.transform.tag == "Ground")
-                {
-                    //GameObject.activeSelf;
-                    int instaniateNum;
-                    if (UIManager.instance.FarmChosen == true)
-                    {
-                        instaniateNum = 0;
-                    }
-                    else
-                    {
-                        instaniateNum = 1;
-                    }
-
-                    hit3.collider.transform.GetComponent<ClickableTile>().Destroy(instaniateNum);
-                }
-            }
-
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    private bool InBounds(int x, int y)
+    {
+        if (x > map.RealHeight || x < 0 || y > map.RealWidth || y < 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 }

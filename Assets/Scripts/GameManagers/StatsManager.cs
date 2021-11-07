@@ -2,12 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class StatsManager : MonoBehaviour
 {
-    public Text ObjectName;
-    public Text Health;
-    public Text Peasants;
+    public TextMeshProUGUI ObjectName;
+    public TextMeshProUGUI Inside;
+
+    public TextMeshProUGUI Knights;
+    public TextMeshProUGUI Archers;
+    public TextMeshProUGUI Calvalry;
+
 
     public List<string> Strings = new List<string>();
 
@@ -20,7 +25,59 @@ public class StatsManager : MonoBehaviour
     //2 = worker
     //3 = mech
     //4 = skeleton
+    /*
+    void GenerateText(string Name, string Health, string Inside, string Name, string Health, string Inside,)
+    {
+        ObjectName.text = Name;
+    }
+    */
 
+    void SetText(List<int> numbers, string RealName)
+    {
+        
+        if(RealName == null)
+        {
+            ObjectName.text = Strings[numbers[0]];
+        }
+        else
+        {
+            ObjectName.text = RealName;
+        }
+        if (numbers[1] != 10000)
+        {
+            Inside.text = "Inside: " + numbers[1];
+        }
+        else
+        {
+            Inside.text = "";
+        }
+        if (numbers[2] != 10000)
+        {
+            Knights.text = "Knights: " + numbers[2];
+        }
+        else
+        {
+            Knights.text = "";
+        }
+        if (numbers[3] != 10000)
+        {
+            Archers.text = "Archers: " + numbers[3];
+        }
+        else
+        {
+            Archers.text = "";
+        }
+        if (numbers[4] != 10000)
+        {
+            Calvalry.text = "Calvalry: " + numbers[4];
+        }
+        else
+        {
+            Calvalry.text = "";
+        }
+
+
+    }
     void Update()
     {
         if(ClickScript.instance.CurrentSelected != null)
@@ -35,57 +92,64 @@ public class StatsManager : MonoBehaviour
 
         int Num = 0;
 
-
-        Peasants.text = "";
+        //Peasants.text = "";
         bool Custom = false;
-        if (Selected.GetComponent("Infantry"))
+        List<int> Display = new List<int>();
+        for (int i = 0; i < 7; i++)
+            Display.Add(0);
+        if (Selected.GetComponent("ArmyPack"))
         {
-            MaxHealth = Selected.GetComponent<Infantry>().MaxHealth;
-            CurrentHealth = Selected.GetComponent<Infantry>().Health;
-            Num = 1;
+            Display[0] = 0;
+            Display[1] = 10000;
+            Display[2] = Selected.GetComponent<ArmyPack>().Knights;
+            Display[3] = Selected.GetComponent<ArmyPack>().Archers;
+            Display[4] = Selected.GetComponent<ArmyPack>().Calvalry;
+            SetText(Display, null);
         }
-        else if (Selected.GetComponent("Worker"))
+        else if (Selected.GetComponent("BattleUnit"))
         {
-            
-            MaxHealth = Selected.GetComponent<Worker>().MaxHealth;
-            CurrentHealth = Selected.GetComponent<Worker>().Health;
-            Num = 2;
-        }
-        else if (Selected.GetComponent("Mech"))
-        {
-            
-            MaxHealth = Selected.GetComponent<Mech>().MaxHealth;
-            CurrentHealth = Selected.GetComponent<Mech>().Health;
-            Num = 3;
-        }
-        else if (Selected.GetComponent("Skeleton"))
-        {
-            
-            MaxHealth = Selected.GetComponent<Skeleton>().MaxHealth;
-            CurrentHealth = Selected.GetComponent<Skeleton>().Health;
-            Num = 4;
+            Display[2] = 10000;
+            Display[3] = 10000;
+            Display[4] = 10000;
+            if (Selected.GetComponent("BattleKnight"))
+            {
+                Display[0] = 1;
+                Display[1] = Selected.GetComponent<ArmyPack>().Knights;
+                
+            }
+            else if (Selected.GetComponent("BattleArcher"))
+            {
+                Display[0] = 2;
+                Display[1] = Selected.GetComponent<ArmyPack>().Archers;
+            }
+            else if (Selected.GetComponent("BattleCalvalry"))
+            {
+                Display[0] = 3;
+                Display[1] = Selected.GetComponent<ArmyPack>().Calvalry;
+            }
+            SetText(Display, null);
         }
         else if (Selected.GetComponent("WalkingPerson"))
         {
-            ObjectName.text = Selected.GetComponent<WalkingPerson>().currentPerson.FullName;
-            MaxHealth = 0;
-            CurrentHealth = 0;
-            Custom = true;
+            /*
+            string Name = Selected.GetComponent<WalkingPerson>().currentPerson.FullName;
+            Display[0] = 0;
+            Display[1] = Selected.GetComponent<PeasantGroup>().Population;
+            Display[2] = 10000;
+            Display[3] = 10000;
+            Display[4] = 10000;
+            SetText(Display, Name);
+            */
         }
         else if (Selected.GetComponent("PeasantGroup"))
         {
-            ObjectName.text = "PeasantGroup";
-            Peasants.text = "Peasants: " + Selected.GetComponent<PeasantGroup>().Population;
-            MaxHealth = 0;
-            CurrentHealth = 0;
-            Custom = true;
+            Display[0] = 4;
+            Display[1] = Selected.GetComponent<PeasantGroup>().Population;
+            Display[2] = 10000;
+            Display[3] = 10000;
+            Display[4] = 10000;
+            SetText(Display, null);
         }
-        string HealthDisplay = "Health: " + MaxHealth + "/" + MaxHealth;
-        Health.text = HealthDisplay;
-        if(Custom == false)
-        {
-            string ObjectDisplay = Strings[Num];
-            ObjectName.text = ObjectDisplay;
-        }    
+        
     }
 }

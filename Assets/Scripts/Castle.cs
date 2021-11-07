@@ -70,9 +70,7 @@ public class Castle : MonoBehaviour
         Knights -= Knight;
         Archers -= Archer;
         Calvalry -= Calval;
-        //Debug.Log("PT1");
         int2 side = FindNeighbour();
-        //Debug.Log("PT2.2");
         //get leader
         Person bestFit = Inside[0];
        // Debug.Log("PT2.3");
@@ -135,9 +133,6 @@ public class Castle : MonoBehaviour
                         }
                     }
                 }
-
-
-
             }
             else if(Skip == false)
             {

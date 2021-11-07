@@ -18,7 +18,7 @@ public class BattleField : MonoBehaviour
 
     #endregion
 
-
+    
     //zoom into lower field
     //stop time during battle?
     //horses move faster
@@ -44,6 +44,8 @@ public class BattleField : MonoBehaviour
 
     public List<int2> PlayerSpawns = new List<int2>();
 
+    public bool Active;
+
     //it could generate it right off the bat, and just access and change
     // Start is called before the first frame update
     
@@ -54,6 +56,7 @@ public class BattleField : MonoBehaviour
         //check if odd first
         int PlayerStacks = 0;
         int EnemyStacks = 0;
+        int PlayerCurrentSpawn = 0;
         for (int i = 0; i < FriendCounts.Count; i++)
         {
             while (FriendCounts[i] > EachMaxGroup[i])
@@ -65,12 +68,14 @@ public class BattleField : MonoBehaviour
             for (int j = 0; j < PlayerStacks; j++)
             {
                 //spawn at playerspawnsi
-                Spawn(EachMaxGroup[i], i, PlayerSpawns[j], true);
+                Spawn(EachMaxGroup[i], i, PlayerSpawns[PlayerCurrentSpawn], true);
+                PlayerCurrentSpawn += 1;
             }
 
             if (FriendCounts[i] != 0)
             {
-                Spawn(FriendCounts[i], i, PlayerSpawns[PlayerStacks + 1], true);
+                Spawn(FriendCounts[i], i, PlayerSpawns[PlayerCurrentSpawn], true);
+                PlayerCurrentSpawn += 1;
             }
         }
     }
@@ -78,15 +83,13 @@ public class BattleField : MonoBehaviour
     public void Spawn(int Number, int Type, int2 Pos, bool Friendly)
     {
         Vector2 position = GetPosition(Pos.x, Pos.y);
-        //Debug.Log("pt1");
+        position.y += map.YDrawOffset;
         GameObject Spawned = (GameObject)Instantiate(BattleUnits[Type], position, Quaternion.identity);
-        //Debug.Log("pt2");
         Spawned.GetComponent<BattleUnit>().World = position;
-        //Debug.Log("pt3");
         Spawned.GetComponent<BattleUnit>().Grid = Pos;
-        //Debug.Log("pt4");
         Spawned.GetComponent<BattleUnit>().Friendly = Friendly;
-        //Debug.Log("pt5");
+        Spawned.GetComponent<BattleUnit>().inside = Number;
+
         //Spawned.GetComponent<BattleUnit>().FactionNum = Faction;
         if (Type == 0)
         {

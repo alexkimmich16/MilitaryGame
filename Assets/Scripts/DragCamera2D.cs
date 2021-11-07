@@ -260,7 +260,7 @@ public class DragCamera2D : MonoBehaviour
     }
 
     private void clampZoom() {
-        Camera.main.orthographicSize =  Mathf.Clamp(Camera.main.orthographicSize, minZoom, maxZoom);
+        cam.orthographicSize =  Mathf.Clamp(Camera.main.orthographicSize, minZoom, maxZoom);
         Mathf.Max(cam.orthographicSize, 0.1f);
 
 

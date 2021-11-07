@@ -29,7 +29,7 @@ public class UIManager : MonoBehaviour
     Image BuildingSR;
     public bool ShowBarracks;
     public GameObject Barracks;
-    public GameObject BattleField;
+    public GameObject BattleFieldOBJ;
 
     //public GameObject TileParent;
     public GameObject FamilyTree;
@@ -52,6 +52,7 @@ public class UIManager : MonoBehaviour
     public SendMenu sendScript;
 
     public int Accept;
+
 
     public void AcceptCurrent()
     {
@@ -81,7 +82,8 @@ public class UIManager : MonoBehaviour
 
     public void BattleFieldOpen(bool Open)
     {
-        BattleField.SetActive(Open);
+        BattleFieldOBJ.SetActive(Open);
+        BattleField.instance.Active = Open;
         CameraSwitcher.instance.SetCamera(!Open);
     }
 

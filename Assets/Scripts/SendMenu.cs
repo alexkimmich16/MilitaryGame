@@ -10,6 +10,11 @@ public class SendMenu : MonoBehaviour
     public int KnightCount;
     public int ArcherCount;
     public int CalvalryCount;
+
+    public int KnightAdd;
+    public int ArcherAdd;
+    public int CalvalryAdd;
+
     public TextMeshProUGUI KnightText;
     public TextMeshProUGUI ArcherText;
     public TextMeshProUGUI CalvalryText;
@@ -19,7 +24,12 @@ public class SendMenu : MonoBehaviour
 
 
     // Start is called before the first frame update
-
+    public void ResetCount()
+    {
+        KnightCount = 0;
+        ArcherCount = 0;
+        CalvalryCount = 0;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -29,6 +39,7 @@ public class SendMenu : MonoBehaviour
     }
     public void RecieveObjective(int2 objective)
     {
+        ResetCount();
         Objective = objective;
     }
 
@@ -36,29 +47,29 @@ public class SendMenu : MonoBehaviour
     {
         if (Num == 1)
         {
-            KnightCount += 1;
+            KnightCount += KnightAdd;
         }
         else if (Num == -1)
         {
-            KnightCount -= 1;
+            KnightCount -= KnightAdd;
         }
 
         if (Num == 2)
         {
-            ArcherCount += 1;
+            ArcherCount += ArcherAdd;
         }
         else if (Num == -2)
         {
-            ArcherCount -= 1;
+            ArcherCount -= ArcherAdd;
         }
 
         if (Num == 3)
         {
-            CalvalryCount += 1;
+            CalvalryCount += CalvalryAdd;
         }
         else if (Num == -3)
         {
-            CalvalryCount -= 1;
+            CalvalryCount -= CalvalryAdd;
         }
     }
 
