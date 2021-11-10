@@ -133,7 +133,7 @@ public class ClickScript : MonoBehaviour
                             Friendly.Add(i);
                         }
                     }
-                    map.PM.FindPath(start, end, CurrentSelected, Faction, 20, allegiances.instance.Lists[Faction].Castles[0], false);
+                    map.PM.FindPath(start, end, CurrentSelected, Faction, 20, false);
                     //Debug.Log("pt5");
                 }
                 if (hit2.transform.tag == "Enemy" && CurrentSelected.transform.tag == "Infantry")
@@ -199,19 +199,26 @@ public class ClickScript : MonoBehaviour
         Vector3Int gridInts = BattleField.instance.FieldMap.WorldToCell(Ajusted);
 
         CurrentSelected = null;
-        if (InBoundsBattle(gridInts.x, gridInts.y) == true)
+        if (InBoundsBattle(gridInts.x, gridInts.y) == false)
         {
             return;
         }
 
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
-        if (hit != null && hit.transform.GetComponent<BattleUnit>())
+        if (hit.transform != null)
         {
-            hit.transform.GetComponent<BattleUnit>().SetActive(true);
-            CurrentSelected = hit.transform.gameObject;
-            UIManager.instance.SetStatManager(true);
+            if (IsPointerOverUIObject() == false)
+            {
+                if (hit.transform.GetComponent<BattleUnit>())
+                {
+                    //hit.transform.SendMessage("SetActive", true, SendMessageOptions.DontRequireReceiver);
+                    hit.transform.GetComponent<BattleUnit>().SetActive(true);
+                    CurrentSelected = hit.transform.gameObject;
+                    UIManager.instance.SetStatManager(true);
+                }
+            }
         }
-        
+
     }
     public void ClickTouchRightBattle()
     {

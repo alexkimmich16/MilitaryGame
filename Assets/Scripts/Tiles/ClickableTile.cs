@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 public class ClickableTile : MonoBehaviour {
 
+	/*
 	//how many to a tile?
 	//does it vary on the tile?
 	//some tiles hold 10 weight and swamps hold 5 or something
@@ -89,7 +90,7 @@ public class ClickableTile : MonoBehaviour {
 		
 		
 
-		/*
+		
 		else if (KingdomAssigner.instance.GreyTiles == true)
         {
 			if (Kingdom == 0)
@@ -135,7 +136,7 @@ public class ClickableTile : MonoBehaviour {
 				spriteRenderer.color = Color.cyan;
 			}
 		}
-		*/
+		
 		#endregion
 	}
 
@@ -281,5 +282,6 @@ public class ClickableTile : MonoBehaviour {
 			
 
 		}
-	}
+	}*/
+
 }

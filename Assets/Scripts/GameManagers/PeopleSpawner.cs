@@ -69,7 +69,7 @@ public class PeopleSpawner : MonoBehaviour
         
         if (Send == true)
         {
-            Map.PM.FindPath(Spawn, Objective, Spawned, castle.FactionNum, castle.FactionNum, castle, false);
+            Map.PM.FindPath(Spawn, Objective, Spawned, castle.FactionNum, castle.FactionNum, false);
             //Objective
         }
         
@@ -155,7 +155,7 @@ public class PeopleSpawner : MonoBehaviour
         allegiances.instance.Lists[0].ArmyTransforms.Add(Spawned.transform);
         if (UseTo == true)
         {
-            Map.PM.FindPath(spawn, To, Spawned, castle.FactionNum, castle.FactionNum, castle, false);
+            Map.PM.FindPath(spawn, To, Spawned, castle.FactionNum, castle.FactionNum, false);
             //Map.PM.GeneratePath(Spawned, 0);
         }
         

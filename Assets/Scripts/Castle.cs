@@ -240,6 +240,7 @@ public class Castle : MonoBehaviour
     public void AdjustSpawns()
     {
         //for castle tiles
+        /*
         SpawnSpots.Clear();
         CastleSpawns.Clear();
         for (int i = 0; i < neighbours.Count; i++)
@@ -333,6 +334,7 @@ public class Castle : MonoBehaviour
                 }
             }
         }
+        */
     }
 
     public void SetFaction(int Faction)
