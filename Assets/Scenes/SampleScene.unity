@@ -14343,29 +14343,19 @@ MonoBehaviour:
   Height: 300
   Scale: 4
   Decay: 50
-  MountainThreshhold: 0.339
-  DirtThreshhold: 0.04
-  SandThreshhold: 0.02
+  MountainThreshhold: {x: 0.34, y: 1}
+  DirtThreshhold: {x: 0.2821853, y: 0.34}
+  SandThreshhold: {x: 0.15, y: 0.3}
+  WaterThreshhold: {x: 0, y: 0.14638956}
   RealWidth: 0
   RealHeight: 0
   mountainMap: {fileID: 906038691}
   parentOBJ: {fileID: 1380929822}
   selectedUnit: {fileID: 0}
-  finalVector3: {x: 0, y: 0, z: 0}
-  SpareX: 0
-  SpareY: 0
-  startPosition:
-    x: 0
-    y: 0
-  endPosition:
-    x: 0
-    y: 0
-  Current:
-    x: 0
-    y: 0
   PathParent: {fileID: 1383658102}
   KingdomSave: 
   TileSave: 
+  TerrainValues: []
   tileTypes:
   - name: Mount
     isWalkable: 0

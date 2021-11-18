@@ -42,15 +42,7 @@ public class ClickScript : MonoBehaviour
         Ajusted.y -= map.YDrawOffset;
         //ints from mouse
         Vector3Int gridInts = map.mountainMap.WorldToCell(Ajusted);
-        //Debug.Log("CLICK:  " + InBounds(gridInts.x, gridInts.y) + "  " + IsPointerOverUIObject());
-        if (InBounds(gridInts.x, gridInts.y) == false)
-        {
-            //Debug.Log("pt1.1");
-        }
-        if (IsPointerOverUIObject() == true)
-        {
-            //Debug.Log("pt1.2");
-        }
+        Debug.Log(map.GetTerrainValue(gridInts.x, gridInts.y));
         if (InBounds(gridInts.x, gridInts.y) == false || IsPointerOverUIObject() == true)
         {
             return;
