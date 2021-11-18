@@ -87,7 +87,8 @@ public class Unit : MonoBehaviour {
     {
 		int ValueInArray = (end.x * map.RealHeight) + end.y;
 		int Enemy = map.KingdomSave[ValueInArray];
-		map.PM.FindPath(end, start, gameObject, FactionNum, Enemy, null, false);
+		List<int2> Path = map.PM.FindPath(end, start, FactionNum, Enemy, false);
+		AddToPath(Path);
 	}
 	
 	void Awake()
@@ -114,7 +115,7 @@ public class Unit : MonoBehaviour {
 				
 			};
 		}
-
+		/*
 		Vector2 point = new Vector2(transform.position.x, transform.position.y);
 		int layerMask = (1 << 8);
 		Collider2D objectHit = Physics2D.OverlapPoint(point, layerMask);
@@ -123,18 +124,18 @@ public class Unit : MonoBehaviour {
 			if (FirstTransform == false && objectHit.gameObject.GetComponent<ClickableTile>())
 			{
 				//Debug.Log(objectHit.gameObject.name);
-				GridX = objectHit.gameObject.GetComponent<ClickableTile>().tileX;
-				GridY = objectHit.gameObject.GetComponent<ClickableTile>().tileY;
+				//GridX = objectHit.gameObject.GetComponent<ClickableTile>().tileX;
+				//GridY = objectHit.gameObject.GetComponent<ClickableTile>().tileY;
 
-				WorldX = objectHit.gameObject.GetComponent<ClickableTile>().WorldX;
-				WorldY = objectHit.gameObject.GetComponent<ClickableTile>().WorldY;
+				//WorldX = objectHit.gameObject.GetComponent<ClickableTile>().WorldX;
+				//WorldY = objectHit.gameObject.GetComponent<ClickableTile>().WorldY;
 
 				NowGridX = GridX;
 				NowGridY = GridY;
 				FirstTransform = true;
 			}
 		}
-		
+		*/
 		
 	}
 
@@ -171,7 +172,6 @@ public class Unit : MonoBehaviour {
 		bool SurroundedBool = false;
 		for (int i = 0; i < 6; i++)
 		{
-
 			if (GridY % 2 == 1)
 			{
 				int X = GridX + map.neighbourOffsetArrayOdd[i].x;
@@ -292,20 +292,20 @@ public class Unit : MonoBehaviour {
 
 	public void AddToPath(List<int2> VectorList)
 	{
-		SpareHolder = VectorList;
+		//SpareHolder = VectorList;
 		Grids.Clear();
 		CurrentPath.Clear();
 		PathCosts.Clear();
-		for (int i = 0; i < SpareHolder.Count; i++)
+		for (int i = 0; i < VectorList.Count; i++)
 		{
-			Vector2 NextPath = map.GetPosition(SpareHolder[i].x, SpareHolder[i].y);
+			Vector2 NextPath = map.GetPosition(VectorList[i].x, VectorList[i].y);
 			CurrentPath.Add(NextPath);
-			int2 newInt = new int2(SpareHolder[i].x, SpareHolder[i].y);
+			int2 newInt = new int2(VectorList[i].x, VectorList[i].y);
 			Grids.Add(newInt);
 			PathCosts.Add(map.CostOfTile(newInt.x, newInt.y));
 		}
-		start = new int2(SpareHolder[0].x, SpareHolder[0].y);
-		end = new int2(SpareHolder[SpareHolder.Count - 1].x, SpareHolder[SpareHolder.Count - 1].y);
+		start = new int2(VectorList[0].x, VectorList[0].y);
+		end = new int2(VectorList[VectorList.Count - 1].x, VectorList[VectorList.Count - 1].y);
 	}
 
 	public void RemoveFromArmyList()

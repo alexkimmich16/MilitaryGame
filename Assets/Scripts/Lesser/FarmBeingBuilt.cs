@@ -6,12 +6,12 @@ public class FarmBeingBuilt : MonoBehaviour
 {
     public float Max;
     public float Current;
-    private ClickableTile CT;
+    //private ClickableTile CT;
     public Castle castle;
     // Start is called before the first frame update
     void Start()
     {
-        CT = gameObject.GetComponent<ClickableTile>();
+        //CT = gameObject.GetComponent<ClickableTile>();
     }
 
     // Update is called once per frame
@@ -19,7 +19,7 @@ public class FarmBeingBuilt : MonoBehaviour
     {
         if(Current > Max)
         {
-            CT.map.TM.ReplaceWithFarm(CT.tileX, CT.tileY, CT.Kingdom, castle);
+            //CT.map.TM.ReplaceWithFarm(CT.tileX, CT.tileY, CT.Kingdom, castle);
         }
     }
 }

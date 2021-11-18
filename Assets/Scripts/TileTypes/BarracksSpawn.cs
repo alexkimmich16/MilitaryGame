@@ -105,11 +105,12 @@ public class BarracksSpawn : MonoBehaviour
 
     public void Spawn(int SpawnNum)
     {
+        /*
         Debug.Log(SpawnNum);
         string IdentifyNumber = X + " " + Y;
         GameObject foundObject = GameObject.Find(IdentifyNumber);
-        float x = foundObject.GetComponent<ClickableTile>().WorldX;
-        float y = foundObject.GetComponent<ClickableTile>().WorldY;
+        //float x = foundObject.GetComponent<ClickableTile>().WorldX;
+        //float y = foundObject.GetComponent<ClickableTile>().WorldY;
         if(SpawnNum == 3)
         {
             GameObject SpawnedInfantry = Instantiate(PeopleSpawner.instance.Mech, new Vector3(x, y, 0), Quaternion.identity);
@@ -137,7 +138,7 @@ public class BarracksSpawn : MonoBehaviour
             SpawnedInfantry.GetComponent<Unit>().GridX = X;
             SpawnedInfantry.GetComponent<Unit>().GridY = Y;
         }
-
+        */
     }
 
     

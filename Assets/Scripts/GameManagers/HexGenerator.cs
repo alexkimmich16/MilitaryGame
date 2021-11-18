@@ -69,7 +69,7 @@ public class HexGenerator : MonoBehaviour
 	public Noise noise;
 
 	[Header("Low Lists")]
-	public NativeArray<int> BasicTileSave;
+	//public NativeArray<int> BasicTileSave;
 	
 	public List<int2> neighbourOffsetArrayEven = new List<int2>();
 	public List<int2> neighbourOffsetArrayOdd = new List<int2>();

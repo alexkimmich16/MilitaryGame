@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4252557556405694065}
   - component: {fileID: 4252557556405694066}
   - component: {fileID: 4944973402214042036}
+  - component: {fileID: -912332879340516618}
   m_Layer: 12
   m_Name: Calvalry
   m_TagString: Untagged
@@ -47,12 +48,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inside: 0
   Speed: 0
+  map: {fileID: 0}
   Current: 0
   Grid:
     x: 0
     y: 0
   World: {x: 0, y: 0}
   Friendly: 0
+  Active: 0
+  Iswalking: 0
+  PathParent: {fileID: 0}
+  Nodes: []
+  start:
+    x: 0
+    y: 0
+  end:
+    x: 0
+    y: 0
+  WorldX: 0
+  WorldY: 0
+  GridX: 0
+  GridY: 0
+  NowGridX: 0
+  NowGridY: 0
+  mat: []
 --- !u!114 &4252557556405694066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,3 +137,29 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &-912332879340516618
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4252557556405694067}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2, y: 2.8}
+    newSize: {x: 4.9, y: 5}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2.8}
+  m_EdgeRadius: 0

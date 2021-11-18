@@ -5,7 +5,8 @@ using Unity.Mathematics;
 
 public class Mech : MonoBehaviour
 {
-    public Unit unit;
+    /*
+	public Unit unit;
 	public List<int2> neighbourOffsetArrayEven = new List<int2>();
 	public List<int2> neighbourOffsetArrayOdd = new List<int2>();
 
@@ -45,34 +46,6 @@ public class Mech : MonoBehaviour
 		Health = MaxHealth;
 		SR = gameObject.GetComponent<SpriteRenderer>();
 		//ClickScript.instance.Mechs.Add(this);
-
-		neighbourOffsetArrayOdd.Add(new int2(0, +2));
-		neighbourOffsetArrayOdd.Add(new int2(-1, +1));
-		neighbourOffsetArrayOdd.Add(new int2(-1, -1));
-		neighbourOffsetArrayOdd.Add(new int2(0, -2));
-		neighbourOffsetArrayOdd.Add(new int2(0, -1));
-		neighbourOffsetArrayOdd.Add(new int2(0, +1));
-
-		neighbourOffsetArrayEven.Add(new int2(0, +2)); // Left
-		neighbourOffsetArrayEven.Add(new int2(0, 1)); // Right
-		neighbourOffsetArrayEven.Add(new int2(0, -1)); // Up
-		neighbourOffsetArrayEven.Add(new int2(0, -2)); // Down
-		neighbourOffsetArrayEven.Add(new int2(1, -1)); // Left Down
-		neighbourOffsetArrayEven.Add(new int2(1, 1)); // Left Up
-
-		EvenPushArray.Add(new int2(0, 1)); // Left
-		EvenPushArray.Add(new int2(0, 2)); // Right
-		EvenPushArray.Add(new int2(1, +1)); // Up
-		EvenPushArray.Add(new int2(+1, -1)); // Down
-		EvenPushArray.Add(new int2(0, -2)); // Left Down
-		EvenPushArray.Add(new int2(0, -1)); // Left Up
-
-		OddPushArray.Add(new int2(0, 2));
-		OddPushArray.Add(new int2(0, 1));
-		OddPushArray.Add(new int2(0, -1));
-		OddPushArray.Add(new int2(0, -2));
-		OddPushArray.Add(new int2(-1, -1));
-		OddPushArray.Add(new int2(-1, 1));
 	}
 
 	public void Attack(Transform target)
@@ -112,8 +85,8 @@ public class Mech : MonoBehaviour
 			
 
 
-			Transform tile = GameObject.Find(X + " " + Y).transform;
-			ClickableTile CT = tile.GetComponent<ClickableTile>();
+			//Transform tile = GameObject.Find(X + " " + Y).transform;
+			//ClickableTile CT = tile.GetComponent<ClickableTile>();
 
 
 			//damage
@@ -129,10 +102,10 @@ public class Mech : MonoBehaviour
 
 			//AddToArray
 			List<int2> VectorList = new List<int2>();
-			VectorList.Add(new int2(CT.tileX, CT.tileY));
-			VectorList.Add(new int2(CT.tileX, CT.tileY));
-			Enemyunit.AddToPath(VectorList);
-			Enemyunit.PunchLaunched = true;
+			//VectorList.Add(new int2(CT.tileX, CT.tileY));
+			//VectorList.Add(new int2(CT.tileX, CT.tileY));
+			//Enemyunit.AddToPath(VectorList);
+			//Enemyunit.PunchLaunched = true;
 		}
         else
         {
@@ -345,4 +318,5 @@ public class Mech : MonoBehaviour
 	{
 		IsSelected = false;
 	}
+	*/
 }

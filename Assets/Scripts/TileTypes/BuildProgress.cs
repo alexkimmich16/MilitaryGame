@@ -27,7 +27,6 @@ public class BuildProgress : MonoBehaviour
         if (TickCount >= SecondsNeeded && Destoryed == false)
         {
             Destoryed = true;
-            tile.CompleteBuilding();
             Destroy(gameObject);
 
         }

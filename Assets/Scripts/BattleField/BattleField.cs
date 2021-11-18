@@ -46,6 +46,13 @@ public class BattleField : MonoBehaviour
 
     public bool Active;
 
+    public void SetActive(bool True)
+    {
+        Active = True;
+        CameraSwitcher.instance.SetCamera(!True);
+        UIManager.instance.TurnMenusOff();
+    }
+
     //it could generate it right off the bat, and just access and change
     // Start is called before the first frame update
     

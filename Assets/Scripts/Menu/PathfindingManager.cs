@@ -11,29 +11,179 @@ using Random = UnityEngine.Random;
 public class PathfindingManager : MonoBehaviour
 {
 	public HexGenerator map;
+	public BattleField field;
 	public List<int2> RealPath = new List<int2>();
 
-	public bool CheckMapTile(int x, int y, int MyFaction, int OtherFaction, int Objective)
-    {
-		bool KingdomWalk = false;
-		int ArrayNum = (x * map.RealHeight) + y;
-		if (allegiances.instance.Lists[MyFaction].State[OtherFaction] == 1 || OtherFaction == MyFaction || OtherFaction == Objective)
-		{
-			KingdomWalk = true;
-		}
-		if (KingdomWalk == true && map.BasicTileSave[ArrayNum] != 3 && map.BasicTileSave[ArrayNum] != 0)
-		{
-			return true;
-			//Debug.Log(x + " " + y + "  true");
-		}
-		else
-		{
-			return false;
-			//Debug.Log(x + " " + y + "  false");
-		}
-	}
+	#region Non-BattlePaths
 	//GET OBJECTS KINGDOM AND MAKE IT SO OWN KINGDOM IS ALWAYS ALLOWED!!
-	public void FindPath(int2 start, int2 end, GameObject UnitMove, int myKingdom, int ObjectiveType, bool OnFinish)
+	public List<int2> FindPath(int2 start, int2 end, int myKingdom, int ObjectiveType, bool OnFinish)
+	{
+		NativeArray<int> BasicTileSave = new NativeArray<int>(map.RealWidth * map.RealHeight, Allocator.TempJob);
+		for (int x = 0; x < map.TileSave.Count; x++)
+		{
+			BasicTileSave[x] = map.TileSave[x];
+		}
+
+		int Tiles = map.RealHeight * map.RealWidth;
+		
+		NativeArray<bool> NativeWalkable = new NativeArray<bool>(Tiles, Allocator.TempJob);
+		for (int x = 0; x < map.RealWidth; x++)
+		{
+			for (int y = 0; y < map.RealHeight; y++)
+			{
+				int ArrayNum = (x * map.RealHeight) + y;
+				int TileKingdom = map.GetTileFaction(x,y);
+				NativeWalkable[ArrayNum] = CheckMapTile(x, y, myKingdom, TileKingdom, ObjectiveType);
+			}
+		}
+
+		NativeArray<int2> Even = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
+		NativeArray<int2> Odd = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
+		for (int x = 0; x < map.neighbourOffsetArrayEven.Count; x++)
+		{
+			Even[x] = map.neighbourOffsetArrayEven[x];
+			Odd[x] = map.neighbourOffsetArrayOdd[x];
+		}
+
+		NativeArray<int2> PathOut = new NativeArray<int2>(2500, Allocator.TempJob);
+		FindPathJob findPathJob = new FindPathJob
+		{
+			startPosition = new int2(start.x, start.y),
+			endPosition = new int2(end.x, end.y),
+			GridSize = new int2(map.RealWidth, map.RealHeight),
+			Path = PathOut,
+			WalkableTiles = NativeWalkable,
+			OddOffset = Odd,
+			EvenOffset = Even,
+		};
+		JobHandle jobHandle = findPathJob.Schedule();
+		jobHandle.Complete();
+
+		List<int2> FoundPath = new List<int2>();
+		for (int i = 0; i < findPathJob.Path.Length; i++)
+		{
+			if (findPathJob.Path[i].x != 0)
+			{
+				FoundPath.Add(findPathJob.Path[i]);
+			}
+		}
+
+		FoundPath.Reverse();
+		//PathOut.Dispose();
+		//Debug.Log(RealPath.Count);
+		BasicTileSave.Dispose();
+		NativeWalkable.Dispose();
+        if (FoundPath.Count == 0)
+        {
+			//Debug.LogError("NoPathFound");
+		}
+		return FoundPath;
+		/*
+			if (OnFinish == true)
+			{
+				UnitMove.GetComponent<Unit>().OnFinish = true;
+				UnitMove.GetComponent<Unit>().WalkingTowardsFaction = ObjectiveType;
+			}
+			*/
+	}
+
+	public void FindBattlePath(int2 start, int2 end, GameObject UnitMove, int myKingdom, int ObjectiveType, Castle castle, bool OnFinish)
+	{
+		//Debug.Log(start + "   " + end);
+		List<bool> CantWalkList = new List<bool>();
+		NativeArray<bool> UnWalkableKingdoms = new NativeArray<bool>(CantWalkList.Count, Allocator.TempJob);
+		for (int x = 0; x < CantWalkList.Count; x++)
+		{
+			UnWalkableKingdoms[x] = CantWalkList[x];
+		}
+
+		int Count = map.Width * map.Height + 2;
+
+		NativeArray<int> BasicTileSave = new NativeArray<int>(Count, Allocator.TempJob);
+		for (int x = 0; x < map.TileSave.Count; x++)
+		{
+			BasicTileSave[x] = map.TileSave[x];
+		}
+
+		NativeArray<int2> Even = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
+		NativeArray<int2> Odd = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
+		for (int x = 0; x < map.neighbourOffsetArrayEven.Count; x++)
+		{
+			Even[x] = map.neighbourOffsetArrayEven[x];
+			Odd[x] = map.neighbourOffsetArrayOdd[x];
+			//Debug.Log(map.KingdomSave[x]);
+		}
+
+		NativeArray<int2> PathOut = new NativeArray<int2>(2500, Allocator.TempJob);
+
+		FindPathJob findPathJob = new FindPathJob
+		{
+			startPosition = new int2(start.x, start.y),
+			endPosition = new int2(end.x, end.y),
+			GridSize = new int2(map.RealWidth, map.RealHeight),
+			Path = PathOut,
+			//Kingdoms = NativeKingdom,
+			//BasicTileSave = BasicTileSave,
+			MyKingdom = myKingdom,
+			enemyType = ObjectiveType,
+			//UnwalkableKingdoms = UnWalkableKingdoms,
+			OddOffset = Odd,
+			EvenOffset = Even,
+		};
+		JobHandle jobHandle = findPathJob.Schedule();
+		jobHandle.Complete();
+
+
+		for (int i = 0; i < findPathJob.Path.Length; i++)
+		{
+			if (findPathJob.Path[i].x != 0)
+			{
+				RealPath.Add(findPathJob.Path[i]);
+			}
+		}
+		RealPath.Reverse();
+		//PathOut.Dispose();
+		//Debug.Log(RealPath.Count);
+		BasicTileSave.Dispose();
+		if (RealPath.Count > 0 && UnitMove != null)
+		{
+			//Debug.Log("Found!");
+			UnitMove.GetComponent<Unit>().AddToPath(RealPath);
+			if (OnFinish == true)
+			{
+				UnitMove.GetComponent<Unit>().OnFinish = true;
+				UnitMove.GetComponent<Unit>().WalkingTowardsFaction = ObjectiveType;
+			}
+
+		}
+		RealPath.Clear();
+	}
+
+	public int AlteredPathExists(int2 start, int2 end, int MyFaction)
+	{
+		List<int> UnFriendlyListNew = new List<int>();
+
+		for (int i = 0; i < allegiances.instance.Lists[MyFaction].State.Count; i++)
+		{
+			if (allegiances.instance.Lists[MyFaction].State[i] == 1)
+			{
+				UnFriendlyListNew.Add(i);
+			}
+		}
+
+		for (int i = 0; i < 6; i++)
+		{
+			List<int> NewList = UnFriendlyListNew;
+			NewList.Add(i);
+			if (PathExists(start, end, true, MyFaction, MyFaction) == true)
+			{
+				return i;
+			}
+		}
+		return 7;
+	}
+
+	public bool PathExists(int2 start, int2 end, bool UseKingdoms, int MyKingdom, int ObjectiveType)
 	{
 		NativeArray<int> BasicTileSave = new NativeArray<int>(map.RealWidth * map.RealHeight, Allocator.TempJob);
 		for (int x = 0; x < map.TileSave.Count; x++)
@@ -47,8 +197,9 @@ public class PathfindingManager : MonoBehaviour
 		{
 			for (int y = 0; y < map.RealHeight; y++)
 			{
-				int TileKingdom = map.GetTileFaction(x,y);
-				NativeWalkable[ArrayNum] = CheckMapTile(x, y, myKingdom, TileKingdom, ObjectiveType);
+				int TileKingdom = map.GetTileFaction(x, y);
+				int ArrayNum = (x * map.RealHeight) + y;
+				NativeWalkable[ArrayNum] = CheckMapTile(x, y, MyKingdom, TileKingdom, ObjectiveType);
 			}
 		}
 
@@ -83,24 +234,23 @@ public class PathfindingManager : MonoBehaviour
 		}
 		RealPath.Reverse();
 		//PathOut.Dispose();
-		//Debug.Log(RealPath.Count);
 		BasicTileSave.Dispose();
-		NativeWalkable.Dispose();
-		if (RealPath.Count > 0 && UnitMove != null)
+		if (RealPath.Count > 0)
 		{
-			//Debug.Log("Found!");
-			UnitMove.GetComponent<Unit>().AddToPath(RealPath);
-			if (OnFinish == true)
-			{
-				UnitMove.GetComponent<Unit>().OnFinish = true;
-				UnitMove.GetComponent<Unit>().WalkingTowardsFaction = ObjectiveType;
-			}
-
+			RealPath.Clear();
+			return true;
 		}
-		RealPath.Clear();
+		else
+		{
+			RealPath.Clear();
+			return false;
+		}
 	}
-	//only goes in friendly and same terriorty
-	//or if willing to declair war or lose rating
+	#endregion
+
+	#region Battle
+
+	#endregion
 	[BurstCompile]
 	private struct FindPathJob : IJob
 	{
@@ -419,118 +569,36 @@ public class PathfindingManager : MonoBehaviour
 		}
 	}
 
-	public void FindBattlePath(int2 start, int2 end, GameObject UnitMove, int myKingdom, int ObjectiveType, Castle castle, bool OnFinish)
+	public bool CheckMapTile(int x, int y, int MyFaction, int OtherFaction, int Objective)
 	{
-		//Debug.Log(start + "   " + end);
-		List<bool> CantWalkList = new List<bool>();
-		NativeArray<bool> UnWalkableKingdoms = new NativeArray<bool>(CantWalkList.Count, Allocator.TempJob);
-		for (int x = 0; x < CantWalkList.Count; x++)
+		bool KingdomWalk = false;
+		int ArrayNum = (x * map.RealHeight) + y;
+		int TileType = map.CheckTile(x, y);
+		if (allegiances.instance.Lists[MyFaction].State[OtherFaction] == 1 || OtherFaction == MyFaction || OtherFaction == Objective)
 		{
-			UnWalkableKingdoms[x] = CantWalkList[x];
+			KingdomWalk = true;
 		}
-
-		int Count = map.Width * map.Height + 2;
-
-		NativeArray<int> BasicTileSave = new NativeArray<int>(Count, Allocator.TempJob);
-		for (int x = 0; x < map.TileSave.Count; x++)
+		if (KingdomWalk == true && TileType != 3 && TileType != 0)
 		{
-			BasicTileSave[x] = map.TileSave[x];
+			return true;
+			//Debug.Log(x + " " + y + "  true");
 		}
-
-		NativeArray<int2> Even = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
-		NativeArray<int2> Odd = new NativeArray<int2>(map.neighbourOffsetArrayEven.Count, Allocator.TempJob);
-		for (int x = 0; x < map.neighbourOffsetArrayEven.Count; x++)
+		else
 		{
-			Even[x] = map.neighbourOffsetArrayEven[x];
-			Odd[x] = map.neighbourOffsetArrayOdd[x];
-			//Debug.Log(map.KingdomSave[x]);
+			return false;
+			//Debug.Log(x + " " + y + "  false");
 		}
-
-		NativeArray<int2> PathOut = new NativeArray<int2>(2500, Allocator.TempJob);
-
-		FindPathJob findPathJob = new FindPathJob
-		{
-			startPosition = new int2(start.x, start.y),
-			endPosition = new int2(end.x, end.y),
-			GridSize = new int2(map.RealWidth, map.RealHeight),
-			Path = PathOut,
-			//Kingdoms = NativeKingdom,
-			//BasicTileSave = BasicTileSave,
-			MyKingdom = myKingdom,
-			enemyType = ObjectiveType,
-			//UnwalkableKingdoms = UnWalkableKingdoms,
-			OddOffset = Odd,
-			EvenOffset = Even,
-		};
-		JobHandle jobHandle = findPathJob.Schedule();
-		jobHandle.Complete();
-
-
-		for (int i = 0; i < findPathJob.Path.Length; i++)
-		{
-			if (findPathJob.Path[i].x != 0)
-			{
-				RealPath.Add(findPathJob.Path[i]);
-			}
-		}
-		RealPath.Reverse();
-		//PathOut.Dispose();
-		//Debug.Log(RealPath.Count);
-		BasicTileSave.Dispose();
-		if (RealPath.Count > 0 && UnitMove != null)
-		{
-			//Debug.Log("Found!");
-			UnitMove.GetComponent<Unit>().AddToPath(RealPath);
-			if (OnFinish == true)
-			{
-				UnitMove.GetComponent<Unit>().OnFinish = true;
-				UnitMove.GetComponent<Unit>().WalkingTowardsFaction = ObjectiveType;
-			}
-
-		}
-		RealPath.Clear();
 	}
 
-	public int AlteredPathExists(int2 start, int2 end, int MyFaction)
-	{
-		List<int> UnFriendlyListNew = new List<int>();
-
-		for (int i = 0; i < allegiances.instance.Lists[MyFaction].State.Count; i++)
+	public List<int2> BattlePath(int2 start, int2 end)
+    {
+		NativeArray<bool> NativeWalkable = new NativeArray<bool>(map.RealHeight * map.RealWidth, Allocator.TempJob);
+		for (int x = 0; x < field.MapSize.x; x++)
 		{
-			if (allegiances.instance.Lists[MyFaction].State[i] == 1)
+			for (int y = 0; y < field.MapSize.y; y++)
 			{
-				UnFriendlyListNew.Add(i);
-			}
-		}
-
-		for (int i = 0; i < 6; i++)
-		{
-			List<int> NewList = UnFriendlyListNew;
-			NewList.Add(i);
-			if (PathExists(start, end, true, MyFaction) == true)
-			{
-				return i;
-			}
-		}
-		return 7;
-	}
-
-	public bool PathExists(int2 start, int2 end, bool UseKingdoms, int MyKingdom, int ObjectiveType)
-	{
-		NativeArray<int> BasicTileSave = new NativeArray<int>(map.RealWidth * map.RealHeight, Allocator.TempJob);
-		for (int x = 0; x < map.TileSave.Count; x++)
-		{
-			BasicTileSave[x] = map.TileSave[x];
-		}
-
-		int Tiles = map.RealHeight * map.RealWidth;
-		NativeArray<bool> NativeWalkable = new NativeArray<bool>(Tiles, Allocator.TempJob);
-		for (int x = 0; x < map.RealWidth; x++)
-		{
-			for (int y = 0; y < map.RealHeight; y++)
-			{
-				int TileKingdom = map.GetTileFaction(x, y);
-				NativeWalkable[ArrayNum] = CheckMapTile(x, y, MyKingdom, TileKingdom, ObjectiveType);
+				int ArrayNum = (x * map.RealHeight) + y;
+				NativeWalkable[ArrayNum] = field.WalkAble(x,y);
 			}
 		}
 
@@ -547,7 +615,7 @@ public class PathfindingManager : MonoBehaviour
 		{
 			startPosition = new int2(start.x, start.y),
 			endPosition = new int2(end.x, end.y),
-			GridSize = new int2(map.RealWidth, map.RealHeight),
+			GridSize = new int2(field.MapSize.x, field.MapSize.y),
 			Path = PathOut,
 			WalkableTiles = NativeWalkable,
 			OddOffset = Odd,
@@ -556,39 +624,25 @@ public class PathfindingManager : MonoBehaviour
 		JobHandle jobHandle = findPathJob.Schedule();
 		jobHandle.Complete();
 
+		List<int2> FoundPath = new List<int2>();
 		for (int i = 0; i < findPathJob.Path.Length; i++)
 		{
 			if (findPathJob.Path[i].x != 0)
 			{
-				RealPath.Add(findPathJob.Path[i]);
+				FoundPath.Add(findPathJob.Path[i]);
 			}
 		}
-		RealPath.Reverse();
-		//PathOut.Dispose();
-		BasicTileSave.Dispose();
-		if (RealPath.Count > 0)
+
+		FoundPath.Reverse();
+		NativeWalkable.Dispose();
+		if (FoundPath.Count == 0)
 		{
-			RealPath.Clear();
-			return true;
+			//Debug.LogError("NoPathFound");
 		}
-		else
-		{
-			RealPath.Clear();
-			return false;
-		}
+		return FoundPath;
 	}
+	//field
+	//MapSize
+	//only goes in friendly and same terriorty
+	//or if willing to declair war or lose rating
 }
-/*
-                    if (pathNode.Walkable == true)
-                    {
-						if (UnwalkableKingdomsSave[K] == false)
-						{
-							pathNode.SetIsWalkable(false);
-							//Debug.Log("Me: " + K + "  UnwalkableKingdoms[i]  " + UnwalkableKingdomsSave[K] + "  MyKingdom  " + MyKingdom + "  enemyType  " + enemyType + "XY= " + x + " " + y + "setFalse");
-						}
-						else
-						{
-							//Debug.Log("Me: " + K + "  UnwalkableKingdoms[i]  " + UnwalkableKingdomsSave[K] + "  MyKingdom  " + MyKingdom + "  enemyType  " + enemyType + "XY= " + x + " " + y + "setTrue");
-						}
-					}
-					*/

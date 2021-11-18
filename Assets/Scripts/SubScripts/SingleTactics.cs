@@ -210,6 +210,7 @@ public class SingleTactics
 
     public void ManageInfantry()
     {
+        /*
         if (allegiances.instance.Lists[Num].LandBoarder.Count > 0 && allegiances.instance.Lists[Num].InfantryTransforms.Count > 0)
         {
             for (int i = 0; i < allegiances.instance.Lists[Num].InfantryTransforms.Count; i++)
@@ -263,7 +264,7 @@ public class SingleTactics
                 }
             }
         }
-
+        */
         
     }
 

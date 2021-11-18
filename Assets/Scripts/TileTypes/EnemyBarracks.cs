@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class EnemyBarracks : MonoBehaviour
 {
+    /*
     [Header("TickInfo")]
     public float TickCount;
     public int Seconds;
@@ -202,4 +203,5 @@ public class EnemyBarracks : MonoBehaviour
         }
         FactionNum = Faction;
     }
+    */
 }

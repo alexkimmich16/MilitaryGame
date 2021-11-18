@@ -82,7 +82,7 @@ public class Worker : MonoBehaviour
             if (hitObject != null)
             {
                 tile = hitObject.GetComponent<ClickableTile>();
-                RequirementsMet = HexGenerator.instance.CheckForBuilding(tile.tileX, tile.tileY);
+                //RequirementsMet = HexGenerator.instance.CheckForBuilding(tile.tileX, tile.tileY);
             }
         }
         else

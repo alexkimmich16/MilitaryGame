@@ -114,19 +114,16 @@ public class StatsManager : MonoBehaviour
             if (Selected.GetComponent("BattleKnight"))
             {
                 Display[0] = 1;
-                Display[1] = Selected.GetComponent<ArmyPack>().Knights;
-                
             }
             else if (Selected.GetComponent("BattleArcher"))
             {
                 Display[0] = 2;
-                Display[1] = Selected.GetComponent<ArmyPack>().Archers;
             }
             else if (Selected.GetComponent("BattleCalvalry"))
             {
                 Display[0] = 3;
-                Display[1] = Selected.GetComponent<ArmyPack>().Calvalry;
             }
+            Display[1] = Selected.GetComponent<BattleUnit>().inside;
             SetText(Display, null);
         }
         else if (Selected.GetComponent("WalkingPerson"))

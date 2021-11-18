@@ -91,7 +91,8 @@ public class PeopleManager : MonoBehaviour
                                 BattleFieldTiles.Add(new int2(UnitI.GridX, UnitI.GridY));
                                 BattleFieldTiles.Add(new int2(UnitJ.GridX, UnitJ.GridY));
                                 UIManager.instance.BattleFieldOpen(true);
-                                if(SimpleMapGen == true)
+                                BattleField.instance.SetActive(true);
+                                if (SimpleMapGen == true)
                                 {
 
                                     ArmyPack MyArmy = Armies[i].gameObject.GetComponent<ArmyPack>();

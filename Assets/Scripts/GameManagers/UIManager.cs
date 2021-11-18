@@ -52,7 +52,14 @@ public class UIManager : MonoBehaviour
     public SendMenu sendScript;
 
     public int Accept;
-
+    
+    public void TurnMenusOff()
+    {
+        SendMenuOpen(false);
+        AllPeopleOpen(false);
+        SetStatManager(false);
+        ClickScript.instance.castle = null;
+    }
 
     public void AcceptCurrent()
     {
@@ -83,8 +90,6 @@ public class UIManager : MonoBehaviour
     public void BattleFieldOpen(bool Open)
     {
         BattleFieldOBJ.SetActive(Open);
-        BattleField.instance.Active = Open;
-        CameraSwitcher.instance.SetCamera(!Open);
     }
 
     public void AllPeopleOpen(bool Open)
@@ -161,8 +166,15 @@ public class UIManager : MonoBehaviour
         {
             
         }
-
-
+        if (StatsManagerOBJ.GetComponent<StatsManager>().Selected == null)
+        {
+            SetStatManager(false);
+        }
+        else
+        {
+            SetStatManager(true);
+        }
+        /*
         if (ShowBarracks == true)
         {
             ChangeTerrain = false;
@@ -173,6 +185,7 @@ public class UIManager : MonoBehaviour
             Barracks.GetComponent<BarracksManager>().CurrentBarracks = null;
             Barracks.SetActive(false);
         }
+        */
         if (ChangeTerrain == true)
         {
             wall.SetActive(true);
@@ -198,28 +211,21 @@ public class UIManager : MonoBehaviour
 
     public void SetStatManager(bool Active)
     {
-        if (Active == true)
-        {
-            StatsManagerOBJ.SetActive(true);
-        }
-        else
-        {
-            StatsManagerOBJ.SetActive(false);
-        }
+        StatsManagerOBJ.SetActive(Active);
     }
 
+    public void SetBarracks(bool Active)
+    {
+        Barracks.SetActive(Active);
+    }
     public void ChangeBarracks()
     {
         ShowBarracks = !ShowBarracks;
     }
-    public void BarracksNull()
-    {
-        ShowBarracks = false;
-    }
 
-    public void ChangeTerrainMode()
+    public void SetTerrain(bool Active)
     {
-        ChangeTerrain = !ChangeTerrain;
+        //ChangeTerrain.SetActive(Active);
     }
     public void Building()
     {

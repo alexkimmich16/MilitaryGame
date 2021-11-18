@@ -218,6 +218,7 @@ public class TileManager : MonoBehaviour
 	public void FindBuildings(Transform Object, int Type)
 	{
 		//Debug.Log("FIndPath2");
+		/*
 		List<Transform> distences = new List<Transform>();
 		List<int2> Grids = new List<int2>();
 		List<bool> IsTile = new List<bool>();
@@ -384,5 +385,6 @@ public class TileManager : MonoBehaviour
 
 		map.PM.FindPath(start, map.Current, Object.gameObject, Type, EnemyType, null, false);
 		Object.gameObject.GetComponent<Skeleton>().TargetFound(EndTarget, TypeOfObject);
+		*/
 	}
 }

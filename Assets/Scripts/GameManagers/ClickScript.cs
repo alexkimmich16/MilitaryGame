@@ -36,18 +36,30 @@ public class ClickScript : MonoBehaviour
     public void ClickTouchLeft()
     {
         //get mouse
+        //Debug.Log("pt1");
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 Ajusted = mousePos;
         Ajusted.y -= map.YDrawOffset;
         //ints from mouse
         Vector3Int gridInts = map.mountainMap.WorldToCell(Ajusted);
-        //Debug.Log("CLICK:  " + InBounds(gridInts.x, gridInts.y));
+        //Debug.Log("CLICK:  " + InBounds(gridInts.x, gridInts.y) + "  " + IsPointerOverUIObject());
         if (InBounds(gridInts.x, gridInts.y) == false)
+        {
+            //Debug.Log("pt1.1");
+        }
+        if (IsPointerOverUIObject() == true)
+        {
+            //Debug.Log("pt1.2");
+        }
+        if (InBounds(gridInts.x, gridInts.y) == false || IsPointerOverUIObject() == true)
         {
             return;
         }
-        int TileType = map.CheckTile(gridInts.x, gridInts.y);
+        //Debug.Log("pt2");
+        UIManager.instance.SetBarracks(false);
 
+        int TileType = map.CheckTile(gridInts.x, gridInts.y);
+        
         if (TileType == 6)
         {
             int Kingdom = map.GetTileFaction(gridInts.x, gridInts.y);
@@ -60,13 +72,12 @@ public class ClickScript : MonoBehaviour
         {
             castle = null;
         }
-
+       //Debug.Log("pt3");
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
         if (SelectDropPoint == true && hit != null)
         {
             if (DS.DropPoints.Contains(new int2(gridInts.x, gridInts.y)))
             {
-                //Debug.Log("contains " + gridInts.x + " " + gridInts.y);
                 //PeopleSpawner.instance.SpawnFriendly(hit.transform);
                 StartOrganiser.SelectedCastle = true;
                 DS.ClearDropList();
@@ -74,11 +85,7 @@ public class ClickScript : MonoBehaviour
                 SelectDropPoint = false;
             }
         }
-        if (IsPointerOverUIObject() == false)
-        {
-            UIManager.instance.BarracksNull();
-        }
-
+        //Debug.Log("pt4");
         if (CurrentSelected != null)
         {
             CurrentSelected.GetComponent<Unit>().SetActive(false);
@@ -86,19 +93,20 @@ public class ClickScript : MonoBehaviour
         }
 
         CurrentSelected = null;
+        //Debug.Log("pt5");
         if (hit.transform != null)
         {
-            if (IsPointerOverUIObject() == false)
+           // Debug.Log("pt6");
+            if (hit.transform.GetComponent<Unit>())
             {
-                if (hit.transform.GetComponent<Unit>())
-                {
-                    //hit.transform.SendMessage("SetActive", true, SendMessageOptions.DontRequireReceiver);
-                    hit.transform.GetComponent<Unit>().SetActive(true);
-                    CurrentSelected = hit.transform.gameObject;
-                    UIManager.instance.SetStatManager(true);
-                }
+                //Debug.Log("pt7");
+                hit.transform.SendMessage("SetActive", true, SendMessageOptions.DontRequireReceiver);
+                hit.transform.GetComponent<Unit>().SetActive(true);
+                CurrentSelected = hit.transform.gameObject;
+                UIManager.instance.SetStatManager(true);
             }
         }
+        
     }
     public void ClickTouchRight()
     {
@@ -107,12 +115,12 @@ public class ClickScript : MonoBehaviour
         Adjusted.y -= map.YDrawOffset;
         RaycastHit2D hit2 = Physics2D.Raycast(mousePos, Vector2.zero);
         Vector3Int gridInts = map.mountainMap.WorldToCell(Adjusted);
+        
         if (gridInts.x > map.RealWidth || gridInts.x < 0 || gridInts.y > map.RealHeight || gridInts.y < 0)
         {
             return;
         }
-        //int TileType = map.CheckTile(gridInts.x, gridInts.y);
-        //Debug.Log("pt1");
+        //Debug.Log("pt2");
         if (CurrentSelected != null)
         {
             //Debug.Log("pt2");
@@ -133,16 +141,17 @@ public class ClickScript : MonoBehaviour
                             Friendly.Add(i);
                         }
                     }
-                    map.PM.FindPath(start, end, CurrentSelected, Faction, 20, false);
+                    List<int2> Path = map.PM.FindPath(start, end, Faction, 20, false);
+                    CurrentSelected.GetComponent<Unit>().AddToPath(Path);
                     //Debug.Log("pt5");
                 }
                 if (hit2.transform.tag == "Enemy" && CurrentSelected.transform.tag == "Infantry")
                 {
-                    CurrentSelected.GetComponent<Infantry>().Attack(hit2.transform);
+                    //CurrentSelected.GetComponent<Infantry>().Attack(hit2.transform);
                 }
                 else if (hit2.transform.tag == "Enemy" && CurrentSelected.transform.tag == "Mech")
                 {
-                    CurrentSelected.GetComponent<Mech>().Attack(hit2.transform);
+                    //CurrentSelected.GetComponent<Mech>().Attack(hit2.transform);
                 }
             }
             if (CurrentSelected.GetComponent<Castle>() && hit2.transform.tag == "Ground")
@@ -162,30 +171,6 @@ public class ClickScript : MonoBehaviour
     }
     public void RightHold()
     {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hit3 = Physics2D.Raycast(mousePos, Vector2.zero);
-        if (hit3 != null)
-        {
-            if (UIManager.instance.ChangeTerrain == true)
-            {
-                if (hit3.transform.tag == "Ground")
-                {
-                    //GameObject.activeSelf;
-                    int instaniateNum;
-                    if (UIManager.instance.FarmChosen == true)
-                    {
-                        instaniateNum = 0;
-                    }
-                    else
-                    {
-                        instaniateNum = 1;
-                    }
-
-                    hit3.collider.transform.GetComponent<ClickableTile>().Destroy(instaniateNum);
-                }
-            }
-
-        }
     }
     #endregion
 
@@ -203,14 +188,17 @@ public class ClickScript : MonoBehaviour
         {
             return;
         }
-
+        Debug.Log("pt1");
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
         if (hit.transform != null)
         {
+            Debug.Log("pt2");
             if (IsPointerOverUIObject() == false)
             {
+                Debug.Log("pt3");
                 if (hit.transform.GetComponent<BattleUnit>())
                 {
+                    Debug.Log("pt4");
                     //hit.transform.SendMessage("SetActive", true, SendMessageOptions.DontRequireReceiver);
                     hit.transform.GetComponent<BattleUnit>().SetActive(true);
                     CurrentSelected = hit.transform.gameObject;
@@ -218,11 +206,42 @@ public class ClickScript : MonoBehaviour
                 }
             }
         }
-
     }
     public void ClickTouchRightBattle()
     {
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 Adjusted = mousePos;
+        Adjusted.y -= map.YDrawOffset;
+        RaycastHit2D hit2 = Physics2D.Raycast(mousePos, Vector2.zero);
+        Vector3Int gridInts = map.mountainMap.WorldToCell(Adjusted);
+        
+        if (InBoundsBattle(gridInts.x, gridInts.y) == true)
+        {
+            return;
+        }
 
+        if (CurrentSelected != null)
+        {
+            if (CurrentSelected.GetComponent<BattleUnit>())
+            {
+                //Spawned.GetComponent<BattleUnit>().World = position;
+                BattleUnit unit = CurrentSelected.GetComponent<BattleUnit>();
+                int2 start = new int2(unit.Grid.x, unit.Grid.y);
+                int2 end = new int2(gridInts.x, gridInts.y);
+                //List<int> Friendly = new List<int>();
+                //List<int2> Path = map.PM.FindPath(start, end, Faction, 20, false);
+                //CurrentSelected.GetComponent<Unit>().AddToPath(Path);
+            }
+        }
+        if (castle != null)
+        {
+            if (InBounds(gridInts.x, gridInts.y) == true)
+            {
+                UIManager.instance.SendMenuRecieve(new int2(gridInts.x, gridInts.y));
+                UIManager.instance.SendMenuOpen(true);
+            }
+
+        }
     }
     public void RightHoldBattle()
     {
@@ -266,61 +285,6 @@ public class ClickScript : MonoBehaviour
                 RightHoldBattle();
             }
         }
-        
-        //left Touch
-        /*
-                if (hit.transform.tag == "Worker" && UIManager.instance.ChangeTerrain == false)
-                {
-                    if (AllTroops == false && hit.transform.gameObject.GetComponent<Worker>().unit.FactionNum != 0)
-                    {
-                        return;
-                    }
-                    Worker worker = hit.transform.gameObject.GetComponent<Worker>();
-                    worker.ChangeBool();
-                    CurrentSelected = hit.transform.gameObject;
-                }
-
-                if (hit.transform.tag == "Infantry" && UIManager.instance.ChangeTerrain == false)
-                {
-                    if (AllTroops == false && hit.transform.gameObject.GetComponent<Infantry>().unit.FactionNum != 0)
-                    {
-                        return;
-                    }
-                    Infantry infentryScript = hit.transform.gameObject.GetComponent<Infantry>();
-                    infentryScript.ChangeBool();
-                    //infentryScript.Shoot();
-                    //infentryScript.Target = TargetProvider;
-                    CurrentSelected = hit.transform.gameObject;
-                }
-                if (hit.transform.tag == "Mech")
-                {
-                    if (AllTroops == false && hit.transform.gameObject.GetComponent<Worker>().unit.FactionNum != 0)
-                    {
-                        return;
-                    }
-                    hit.transform.gameObject.GetComponent<Mech>().ChangeBool();
-                    CurrentSelected = hit.transform.gameObject;
-                }
-                else if (hit.transform.tag == "Farm")
-                {
-                    UIManager.instance.ChangeBarracks();
-                    hit.transform.gameObject.GetComponent<BarracksSpawn>().IsSelected = true;
-
-                }
-                else if (hit.transform.tag == "Castle")
-                {
-                    CurrentSelected = hit.transform.gameObject;
-                }
-                else if (hit.transform.tag == "Person")
-                {
-                    if (AllTroops == false && hit.transform.gameObject.GetComponent<WalkingPerson>().unit.FactionNum != 0)
-                    {
-                        return;
-                    }
-                    CurrentSelected = hit.transform.gameObject;
-                    hit.transform.gameObject.GetComponent<WalkingPerson>().IsSelected = true;
-                }
-                */
     }
 
     
@@ -349,7 +313,9 @@ public class ClickScript : MonoBehaviour
     
     private bool InBounds(int x, int y)
     {
-        if (x > map.RealHeight || x < 0 || y > map.RealWidth || y < 0)
+        //Debug.Log();
+        
+        if (x > map.RealWidth || x < 0 || y > map.RealHeight || y < 0)
         {
             return false;
         }

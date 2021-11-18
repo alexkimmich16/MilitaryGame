@@ -51,19 +51,19 @@ public class Skeleton : MonoBehaviour
         }
         else if (Target.GetComponent<Infantry>())
         {
-            Target.GetComponent<Infantry>().AddDamage(AttackDamage);
+            //Target.GetComponent<Infantry>().AddDamage(AttackDamage);
         }
         else if (Target.GetComponent<Worker>())
         {
-            Target.GetComponent<Worker>().AddDamage(AttackDamage);
+            //Target.GetComponent<Worker>().AddDamage(AttackDamage);
         }
         else if (Target.GetComponent<Mech>())
         {
-            Target.GetComponent<Mech>().AddDamage(AttackDamage);
+            //Target.GetComponent<Mech>().AddDamage(AttackDamage);
         }
         else if (Target.GetComponent<Skeleton>())
         {
-            Target.GetComponent<Skeleton>().AddDamage(AttackDamage);
+            //Target.GetComponent<Skeleton>().AddDamage(AttackDamage);
         }
     }
     //THIS

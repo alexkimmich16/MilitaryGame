@@ -67,7 +67,7 @@ public class DragCamera2D : MonoBehaviour
     [Range(0.01f, 10)]
     public float minZoom = 0.5f;
     [Tooltip("The Speed the zoom changes")]
-    [Range(0.1f, 10f)]
+    [Range(0.0001f, 10f)]
     public float zoomStepSize = 0.5f;
     [Tooltip("Enable Zooming to mouse pointer (Pro Only)")]
     public bool zoomToMouse = false;
